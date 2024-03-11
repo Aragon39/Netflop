@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,40 +10,59 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
+            align-items: stretch;
+            /* Aligne les éléments en termes de hauteur */
         }
+
         .movie {
-            background-color: #f9f9f9;
+            background-color: #483b3b;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
         .movie img {
-            max-width: 100%;
-            height: auto;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Ajuste la taille de l'image pour couvrir complètement le conteneur tout en conservant son ratio d'aspect */
             border-radius: 5px;
             margin-bottom: 10px;
         }
+
+
         .movie-title {
             font-weight: bold;
-            font-size: 18px;
+            font-size: 20px;
             margin-bottom: 5px;
+            text-align: center;
         }
+
         .movie-year {
             color: #888;
-            font-size: 14px;
+            font-size: 18px;
+            text-align: center;
         }
     </style>
 </head>
+
 <body>
     <h1>Résultats de la recherche de films</h1>
     <div class="movie-container">
         <% movies.forEach(function(movie) { %>
             <div class="movie">
                 <img src="<%= movie.Poster %>" alt="<%= movie.Title %>">
-                <div class="movie-title"><%= movie.Title %></div>
-                <div class="movie-year">Année de sortie : <%= movie.Year %></div>
+                <div class="movie-title">
+                    <%= movie.Title %>
+                </div>
+                <div class="movie-year">Année de sortie : <%= movie.Year %>
+                </div>
             </div>
-        <% }); %>
+            <% }); %>
     </div>
 </body>
+
 </html>
