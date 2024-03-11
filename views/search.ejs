@@ -15,7 +15,7 @@
         }
 
         .movie {
-            background-color: #483b3b;
+            background-color: #313131;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -39,10 +39,11 @@
             font-size: 20px;
             margin-bottom: 5px;
             text-align: center;
+            color: rgb(255, 255, 255);
         }
 
         .movie-year {
-            color: #888;
+            color: #ffffff;
             font-size: 18px;
             text-align: center;
         }
@@ -63,6 +64,20 @@
             </div>
             <% }); %>
     </div>
+
+    <!-- Pagination -->
+    <!-- Pagination -->
+<div class="pagination">
+    <% if (currentPage > 1) { %>
+        <a href="/search?q=<%= searchTerm %>&page=<%= currentPage - 1 %>" class="prev">Page précédente</a>
+    <% } %>
+    <% if (currentPage < totalPages) { %>
+        <a href="/search?q=<%= searchTerm %>&page=<%= currentPage + 1 %>" class="next">Page suivante</a>
+    <% } %>
+</div>
+
+    
+
 </body>
 
 </html>
