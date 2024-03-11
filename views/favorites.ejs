@@ -1,0 +1,57 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favoris</title>
+    <style>
+        /* Ajoutez du CSS pour styliser vos films favoris comme vous le souhaitez */
+        .favorite-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .favorite-movie {
+            width: 300px; /* Ajustez la largeur selon vos préférences */
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .favorite-movie img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Favoris</h1>
+    <% if (favorites && favorites.length > 0) { %>
+        <div class="favorite-container">
+            <% favorites.forEach(function(movieId) { %>
+                <!-- Vous devez récupérer les détails du film en fonction de l'ID -->
+                <!-- Cela peut nécessiter une requête à l'API OMDB ou à une base de données -->
+                <!-- À titre d'exemple, je vais supposer que vous avez une fonction getMovieDetailsById -->
+                <% const movieDetails = getMovieDetailsById(movieId); %>
+                <div class="favorite-movie">
+                    <h2><%= movieDetails.Title %></h2>
+                    <img src="<%= movieDetails.Poster %>" alt="<%= movieDetails.Title %>">
+                    <p>Année de sortie : <%= movieDetails.Year %></p>
+                    <p>Genre : <%= movieDetails.Genre %></p>
+                    <p>Réalisateur : <%= movieDetails.Director %></p>
+                    <p>Acteurs : <%= movieDetails.Actors %></p>
+                    <p>Résumé : <%= movieDetails.Plot %></p>
+                    <!-- Ajoutez un lien pour voir les détails du film -->
+                    <a href="/film/<%= movieDetails.imdbID %>">Voir les détails</a>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <p>Aucun film dans les favoris pour le moment.</p>
+    <% } %>
+    <a href="/search" class="back-button">Retour à la recherche</a>
+</body>
+</html>

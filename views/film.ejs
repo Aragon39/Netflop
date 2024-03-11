@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... (autres balises meta) -->
+    <title>Détails du film</title>
+</head>
+<body>
+    <h1>Détails du film</h1>
+    <% if (film) { %>
+        <h2><%= film.Title %></h2>
+        <img src="<%= film.Poster %>" alt="<%= film.Title %>">
+        <p>Année de sortie : <%= film.Year %></p>
+        <p>Genre : <%= film.Genre %></p>
+        <p>Réalisateur : <%= film.Director %></p>
+        <p>Acteurs : <%= film.Actors %></p>
+        <p>Résumé : <%= film.Plot %></p>
+        <button class="add-to-favorites" data-id="<%= film.imdbID %>">Ajouter aux favoris</button>
+        <a href="/search" class="back-button">Retour à la recherche</a>
+    <% } else { %>
+        <p>Aucun détail trouvé pour ce film.</p>
+    <% } %>
+
+    <script>
+        if (typeof sessionStorage !== 'undefined') {
+            const addToFavoritesBtn = document.querySelector('.add-to-favorites');
+
+            addToFavoritesBtn.addEventListener('click', () => {
+                const movieId = addToFavoritesBtn.getAttribute('data-id');
+                addToFavorites(movieId);
+            });
+
+            function addToFavorites(movieId) {
+                const favorites = JSON.parse(sessionStorage.getItem('favorites')) || [];
+
+                const isAlreadyFavorite = favorites.some((favorite) => favorite === movieId);
+
+                if (!isAlreadyFavorite) {
+                    favorites.push(movieId);
+                    sessionStorage.setItem('favorites', JSON.stringify(favorites));
+                    alert('Film ajouté aux favoris !');
+                } else {
+                    alert('Ce film est déjà dans vos favoris.');
+                }
+            }
+        } else {
+            console.error('sessionStorage is not supported in this environment.');
+        }
+    </script>
+</body>
+</html>

@@ -3,15 +3,15 @@
     "axios": "^1.6.7",
     "ejs": "^3.1.9",
     "express": "^4.18.3",
+    "express-session": "^1.18.0",
     "nodemon": "^3.1.0",
     "path": "^0.12.7"
   },
   "name": "netflop",
   "version": "1.0.0",
   "main": "app.js",
-  "devDependencies": {},
   "scripts": {
-   "start": "nodemon app.js"
+    "start": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
