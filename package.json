@@ -5,5 +5,15 @@
     "express": "^4.18.3",
     "nodemon": "^3.1.0",
     "path": "^0.12.7"
-  }
+  },
+  "name": "netflop",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
