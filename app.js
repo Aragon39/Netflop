@@ -12,20 +12,23 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 
 // Configuration de express-session
-app.use(session({
-  secret: 'votre_secret_key', // Changez ceci par une clé secrète forte
-  resave: false,
-  saveUninitialized: true
-}));
+app.use(
+  session({
+    secret: "votre_secret_key", // Changez ceci par une clé secrète forte
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 // Fonction pour récupérer les détails d'un film par son ID
 async function getMovieDetailsById(id) {
   try {
-    const response = await axios.get(`http://www.omdbapi.com/?i=${id}&apikey=e9025ee9`);
+    const response = await axios.get(
+      `http://www.omdbapi.com/?i=${id}&apikey=e9025ee9`
+    );
     return response.data;
   } catch (error) {
     console.error("Erreur lors de la récupération des détails du film:", error);
-    // Gérez l'erreur en conséquence (vous pourriez renvoyer un objet vide, par exemple)
     return {};
   }
 }
@@ -38,9 +41,10 @@ app.get("/", (req, res) => {
 // Route pour rechercher des films par titre
 app.get("/search", async (req, res) => {
   const searchTerm = req.query.q;
+  const page = parseInt(req.query.page) || 1; // Numéro de page, par défaut à la première page
+  const limit = 10; // Nombre de résultats par page
 
   try {
-    // Effectuer une requête à l'API OMDB pour récupérer les résultats de recherche
     const response = await axios.get(
       `http://www.omdbapi.com/?s=${searchTerm}&apikey=e9025ee9`
     );
@@ -53,29 +57,26 @@ app.get("/search", async (req, res) => {
   }
 });
 
-// Route pour gérer les favoris
-app.post("/favorites/:id", (req, res) => {
-  const { id } = req.params;
-  let favorites = req.session.favorites || [];
+// Route pour afficher les favoris
+app.get("/favorites", async (req, res) => {
+  const favorites = req.session.favorites || [];
 
-  // Ajoutez l'ID du film aux favoris s'il n'est pas déjà présent
-  if (!favorites.includes(id)) {
-    favorites.push(id);
-    req.session.favorites = favorites;
-  }
+  // Récupérer les détails des films favoris de manière asynchrone
+  const favoriteMovies = await Promise.all(
+    favorites.map(async (movieId) => {
+      const movieDetails = await getMovieDetailsById(movieId);
+      return movieDetails;
+    })
+  );
 
-  res.redirect(`/film/${id}`);
+  res.render("favorites", { favorites: favoriteMovies });
 });
-
 // Route pour afficher les détails d'un film
 app.get("/film/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Utilisez la fonction pour récupérer les détails du film
     const filmDetails = await getMovieDetailsById(id);
-
-    // Rendre le fichier film.ejs avec les détails du film
     res.render("film", { film: filmDetails });
   } catch (error) {
     console.error("Erreur lors de la récupération des détails du film:", error);
@@ -89,6 +90,12 @@ app.get("/film/:id", async (req, res) => {
 app.get("/favorites", async (req, res) => {
   const favorites = req.session.favorites || [];
   res.render("favorites", { favorites });
+
+  // (Facultatif) Affichez les informations des films dans la console
+  favorites.forEach((favorite) => {
+    console.log(`Film dans les favoris : ${favorite.details.Title}`);
+    console.log(`ID du film : ${favorite.id}`);
+  });
 });
 
 // Démarrage du serveur
