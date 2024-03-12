@@ -1,0 +1,30 @@
+<!-- détails.ejs -->
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du Film</title>
+    <!-- Vos styles CSS ici -->
+</head>
+
+<body>
+    <h1>Détails du Film</h1>
+    <div class="movie-details">
+        <img src="<%= movie.Poster %>" alt="<%= movie.Title %>">
+        <h2><%= movie.Title %></h2>
+        <p><strong>Année de sortie:</strong> <%= movie.Year %></p>
+        <p><strong>Genre:</strong> <%= movie.Genre %></p>
+        <p><strong>Réalisateur:</strong> <%= movie.Director %></p>
+        <p><strong>Acteurs:</strong> <%= movie.Actors %></p>
+        <p><strong>Langue:</strong> <%= movie.Language %></p>
+        <p><strong>Pays:</strong> <%= movie.Country %></p>
+        <p><strong>Score IMDB:</strong> <%= movie.imdbRating %></p>
+        <p><strong>Synopsis:</strong> <%= movie.Plot %></p>
+        <!-- Lien pour retourner à la recherche -->
+        <a href="/search?q=<%= searchTerm %>" class="return-link">Retour à la recherche</a>
+    </div>
+</body>
+
+</html>

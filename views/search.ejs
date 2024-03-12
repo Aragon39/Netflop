@@ -6,78 +6,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Résultats de la recherche de films</title>
     <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
         .movie-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            align-items: stretch;
-            /* Aligne les éléments en termes de hauteur */
         }
 
         .movie {
-            background-color: #313131;
-            padding: 20px;
-            border-radius: 10px;
+            background-color: #f4f4f4;
+            border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .movie:hover {
+            transform: translateY(-5px);
         }
 
         .movie img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* Ajuste la taille de l'image pour couvrir complètement le conteneur tout en conservant son ratio d'aspect */
+            height: 80%;
             border-radius: 5px;
-            margin-bottom: 10px;
         }
 
-
         .movie-title {
+            font-size: 18px;
             font-weight: bold;
-            font-size: 20px;
-            margin-bottom: 5px;
-            text-align: center;
-            color: rgb(255, 255, 255);
+            margin-top: 10px;
         }
 
         .movie-year {
-            color: #ffffff;
-            font-size: 18px;
+            font-size: 16px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .pagination {
+            margin-top: 20px;
             text-align: center;
         }
+
+        .pagination a {
+            display: inline-block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #007bff;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .pagination .disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
     </style>
+
 </head>
 
 <body>
-    <h1>Résultats de la recherche de films</h1>
-    <div class="movie-container">
-        <% movies.forEach(function(movie) { %>
-            <div class="movie">
-                <img src="<%= movie.Poster %>" alt="<%= movie.Title %>">
-                <div class="movie-title">
-                    <%= movie.Title %>
+    <div class="container">
+        <h1>Résultats de la recherche de films</h1>
+
+        <div class="movie-container">
+            <% movies.forEach(function(movie) { %>
+                <div class="movie">
+                    <a href="/movie/<%= movie.imdbID %>">
+                        <img src="<%= movie.Poster %>" alt="<%= movie.Title %>">
+                    </a>
+                    <div class="movie-title">
+                        <%= movie.Title %>
+                    </div>
+                    <div class="movie-year">Année de sortie : <%= movie.Year %>
+                    </div>
                 </div>
-                <div class="movie-year">Année de sortie : <%= movie.Year %>
-                </div>
-            </div>
-            <% }); %>
+                <% }); %>
+        </div>
+
+        <div class="pagination">
+            <% if (currentPage> 1) { %>
+                <a href="/search?q=<%= searchTerm %>&page=<%= currentPage - 1 %>" class="prev">Page précédente</a>
+                <% } %>
+                    <% if (currentPage < totalPages) { %>
+                        <a href="/search?q=<%= searchTerm %>&page=<%= currentPage + 1 %>" class="next">Page suivante</a>
+                        <% } %>
+        </div>
     </div>
-
-    <!-- Pagination -->
-    <!-- Pagination -->
-<div class="pagination">
-    <% if (currentPage > 1) { %>
-        <a href="/search?q=<%= searchTerm %>&page=<%= currentPage - 1 %>" class="prev">Page précédente</a>
-    <% } %>
-    <% if (currentPage < totalPages) { %>
-        <a href="/search?q=<%= searchTerm %>&page=<%= currentPage + 1 %>" class="next">Page suivante</a>
-    <% } %>
-</div>
-
-    
-
 </body>
 
 </html>
