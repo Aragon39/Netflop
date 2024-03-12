@@ -1,51 +1,58 @@
-
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="fr">
+  <head>
     <!-- ... (autres balises meta) -->
     <title>Détails du film</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Détails du film</h1>
     <% if (film) { %>
-        <h2><%= film.Title %></h2>
-        <img src="<%= film.Poster %>" alt="<%= film.Title %>">
-        <p>Année de sortie : <%= film.Year %></p>
-        <p>Genre : <%= film.Genre %></p>
-        <p>Réalisateur : <%= film.Director %></p>
-        <p>Acteurs : <%= film.Actors %></p>
-        <p>Résumé : <%= film.Plot %></p>
-        <button class="add-to-favorites" data-id="<%= film.imdbID %>">Ajouter aux favoris</button>
-        <a href="/search" class="back-button">Retour à la recherche</a>
+    <h2><%= film.Title %></h2>
+    <img src="<%= film.Poster %>" alt="<%= film.Title %>" />
+    <p>Année de sortie : <%= film.Year %></p>
+    <p>Genre : <%= film.Genre %></p>
+    <p>Réalisateur : <%= film.Director %></p>
+    <p>Acteurs : <%= film.Actors %></p>
+    <p>Résumé : <%= film.Plot %></p>
+    <button class="add-to-favorites" data-id="<%= film.imdbID %>">
+      Ajouter aux favoris
+    </button>
+    <a href="/search" class="back-button">Retour à la recherche</a>
     <% } else { %>
-        <p>Aucun détail trouvé pour ce film.</p>
+    <p>Aucun détail trouvé pour ce film.</p>
     <% } %>
 
     <script>
-        if (typeof sessionStorage !== 'undefined') {
-            const addToFavoritesBtn = document.querySelector('.add-to-favorites');
+      if (typeof sessionStorage !== "") {
+        document.addEventListener("DOMContentLoaded", () => {
+          const addToFavoritesBtn = document.querySelector(".add-to-favorites");
 
-            addToFavoritesBtn.addEventListener('click', () => {
-                const movieId = addToFavoritesBtn.getAttribute('data-id');
-                addToFavorites(movieId);
-            });
+          addToFavoritesBtn.addEventListener("click", () => {
+            const movieId = addToFavoritesBtn.getAttribute("data-id");
+            addToFavorites(movieId);
+          });
 
-            function addToFavorites(movieId) {
-                const favorites = JSON.parse(sessionStorage.getItem('favorites')) || [];
+          async function addToFavorites(movieId) {
+            try {
+              const response = await fetch(`/add-to-favorites/${movieId}`, {
+                method: "POST",
+              });
 
-                const isAlreadyFavorite = favorites.some((favorite) => favorite === movieId);
+              const result = await response.json();
 
-                if (!isAlreadyFavorite) {
-                    favorites.push(movieId);
-                    sessionStorage.setItem('favorites', JSON.stringify(favorites));
-                    alert('Film ajouté aux favoris !');
-                } else {
-                    alert('Ce film est déjà dans vos favoris.');
-                }
+              if (result.success) {
+                alert(result.message);
+              } else {
+                alert(result.message);
+              }
+            } catch (error) {
+              console.error("Erreur lors de l'ajout aux favoris:", error);
             }
-        } else {
-            console.error('sessionStorage is not supported in this environment.');
-        }
+          }
+        });
+      } else {
+        console.error("sessionStorage n'est pas pris en charge dans cet environnement.");
+      }
     </script>
-</body>
+  </body>
 </html>

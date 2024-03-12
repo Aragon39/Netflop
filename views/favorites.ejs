@@ -1,56 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Favoris</title>
+    <a href="/search" class="back-button">Retour à la recherche</a>
     <style>
-        /* Ajoutez du CSS pour styliser vos films favoris comme vous le souhaitez */
-        .favorite-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .favorite-movie {
-            width: 300px; /* Ajustez la largeur selon vos préférences */
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .favorite-movie img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
+      /* Ajoutez du CSS pour styliser vos films favoris comme vous le souhaitez */
+      .favorite-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .favorite-movie {
+        width: 300px; /* Ajustez la largeur selon vos préférences */
+        border: 1px solid #0e0d0d;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      .favorite-movie img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin-bottom: 10px;
+      }
     </style>
-</head>
-<body>
-    <body>
-        <h1>Favoris</h1>
-        <% if (favorites && favorites.length > 0) { %>
-            <div class="favorite-container">
-                <% favorites.forEach(function(movieId) { %>
-                    <!-- Vous devez récupérer les détails du film en fonction de l'ID -->
-                    <!-- Cela peut nécessiter une requête à l'API OMDB ou à une base de données -->
-                    <!-- À titre d'exemple, je vais supposer que vous avez une fonction getMovieDetailsById -->
-                    <% const movieDetails = getMovieDetailsById(movieId); %>
-                    <div class="favorite-movie">
-                        <h2><%= movieDetails.Title %></h2>
-                        <img src="<%= movieDetails.Poster %>" alt="<%= movieDetails.Title %>">
-                        <p>Année de sortie : <%= movieDetails.Year %></p>
-                        <p>Genre : <%= movieDetails.Genre %></p>
-                        <p>Réalisateur : <%= movieDetails.Director %></p>
-                        <p>Acteurs : <%= movieDetails.Actors %></p>
-                        <p>Résumé : <%= movieDetails.Plot %></p>
-                        <!-- Ajoutez un lien pour voir les détails du film -->
-                        <a href="/film/<%= movieDetails.imdbID %>">Voir les détails</a>
-                    </div>
-                <% }); %>
-            </div>
-        <% } else { %>
-            <p>Aucun film dans les favoris pour le moment.</p>
-        <% } %>
-        <a href="/search" class="back-button">Retour à la recherche</a>
-    </body>
-    </html>
+  </head>
+  <body>
+    <h1>Favoris</h1>
+    <% if (favorites && favorites.length > 0) { %>
+    <div class="favorite-container">
+      <% favorites.forEach(function(movieDetails) { %>
+      <div class="favorite-movie">
+        <h2><%= movieDetails.Title %></h2>
+        <img src="<%= movieDetails.Poster %>" alt="<%= movieDetails.Title %>" />
+        <p>Année de sortie : <%= movieDetails.Year %></p>
+        <p>Genre : <%= movieDetails.Genre %></p>
+        <p>Réalisateur : <%= movieDetails.Director %></p>
+        <p>Acteurs : <%= movieDetails.Actors %></p>
+        <p>Résumé : <%= movieDetails.Plot %></p>
+        <a href="/film/<%= movieDetails.imdbID %>">Voir les détails</a>
+        <!-- Bouton pour supprimer le film des favoris -->
+        <button
+          class="remove-favorite-btn"
+          onclick="removeFromFavorites('<%= movieDetails.imdbID %>')"
+        >
+          Supprimer des favoris
+        </button>
+      </div>
+      <% }); %>
+    </div>
+
+    <% } else { %>
+    <p>Aucun film dans les favoris pour le moment.</p>
+    <% } %>
+
+    <!-- Script pour envoyer une requête au serveur pour supprimer un film des favoris -->
+    <script>
+      function removeFromFavorites(movieId) {
+        fetch(`/remove-from-favorites/${movieId}`, { method: "GET" })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Rafraîchir la page après la suppression
+              location.reload();
+            } else {
+              alert(data.message);
+            }
+          })
+          .catch((error) =>
+            console.error("Erreur lors de la suppression des favoris:", error)
+          );
+      }
+    </script>
+  </body>
+</html>

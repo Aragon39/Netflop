@@ -1,7 +1,9 @@
+// Importation des modules
 const express = require("express");
 const axios = require("axios");
 const session = require("express-session");
 
+// Configuration d'Express
 const app = express();
 const port = 3000;
 
@@ -11,10 +13,13 @@ app.set("view engine", "ejs");
 // Middleware pour servir les fichiers statiques (images)
 app.use(express.static("public"));
 
+// Middleware pour traiter les données du formulaire
+app.use(express.urlencoded({ extended: true }));
+
 // Configuration de express-session
 app.use(
   session({
-    secret: "votre_secret_key", // Changez ceci par une clé secrète forte
+    secret: "votre_secret_key",
     resave: false,
     saveUninitialized: true,
   })
@@ -33,35 +38,40 @@ async function getMovieDetailsById(id) {
   }
 }
 
-// Route pour afficher la page d'accueil
+// Page d'accueil
 app.get("/", (req, res) => {
-  res.render("home"); // Rendre le fichier home.ejs
+  res.render("home");
 });
 
-// Route pour rechercher des films par titre
+// Recherche de films
 app.get("/search", async (req, res) => {
   const searchTerm = req.query.q;
-  const page = parseInt(req.query.page) || 1; // Numéro de page, par défaut à la première page
-  const limit = 10; // Nombre de résultats par page
+  const page = parseInt(req.query.page) || 1;
+  const limit = 20;
 
   try {
     const response = await axios.get(
       `http://www.omdbapi.com/?s=${searchTerm}&apikey=e9025ee9`
     );
-
     const movies = response.data.Search;
-    res.render("search", { movies: movies });
+    const totalResults = parseInt(response.data.totalResults);
+    const totalPages = Math.ceil(totalResults / limit);
+
+    res.render("search", {
+      movies: movies,
+      searchTerm: searchTerm,
+      currentPage: page,
+      totalPages: totalPages,
+    });
   } catch (error) {
     console.error("Erreur lors de la recherche de films:", error);
     res.status(500).json({ error: "Erreur lors de la recherche de films" });
   }
 });
 
-// Route pour afficher les favoris
+// Page des favoris
 app.get("/favorites", async (req, res) => {
   const favorites = req.session.favorites || [];
-
-  // Récupérer les détails des films favoris de manière asynchrone
   const favoriteMovies = await Promise.all(
     favorites.map(async (movieId) => {
       const movieDetails = await getMovieDetailsById(movieId);
@@ -71,7 +81,8 @@ app.get("/favorites", async (req, res) => {
 
   res.render("favorites", { favorites: favoriteMovies });
 });
-// Route pour afficher les détails d'un film
+
+// Détails d'un film
 app.get("/film/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -86,16 +97,35 @@ app.get("/film/:id", async (req, res) => {
   }
 });
 
-// Route pour afficher les favoris
-app.get("/favorites", async (req, res) => {
+// Ajout d'un film aux favoris
+app.post("/add-to-favorites/:id", (req, res) => {
+  const { id } = req.params;
   const favorites = req.session.favorites || [];
-  res.render("favorites", { favorites });
 
-  // (Facultatif) Affichez les informations des films dans la console
-  favorites.forEach((favorite) => {
-    console.log(`Film dans les favoris : ${favorite.details.Title}`);
-    console.log(`ID du film : ${favorite.id}`);
-  });
+  if (!favorites.includes(id)) {
+    favorites.push(id);
+    req.session.favorites = favorites;
+    res.json({ success: true, message: "Film ajouté aux favoris !" });
+  } else {
+    res.json({ success: false, message: "Ce film est déjà dans vos favoris." });
+  }
+});
+
+// Suppression d'un film des favoris
+app.get("/remove-from-favorites/:id", (req, res) => {
+  const { id } = req.params;
+  let favorites = req.session.favorites || [];
+
+  if (favorites.includes(id)) {
+    favorites = favorites.filter((movieId) => movieId !== id);
+    req.session.favorites = favorites;
+    res.json({ success: true, message: "Film retiré des favoris !" });
+  } else {
+    res.json({
+      success: false,
+      message: "Ce film n'est pas dans vos favoris.",
+    });
+  }
 });
 
 // Démarrage du serveur
